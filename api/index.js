@@ -1,21 +1,13 @@
 module.exports = (req, res) => {
-  console.log('=== API INDEX ENDPOINT ===');
-  console.log('Method:', req.method);
-  console.log('URL:', req.url);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    console.log('Handling OPTIONS request');
     res.status(200).end();
     return;
   }
 
-  console.log('Sending success response');
   res.status(200).json({
     message: 'Backend maneja ya funcionando',
     status: 'OK',

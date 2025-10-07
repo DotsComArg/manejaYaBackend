@@ -16,6 +16,7 @@
   "author": "Maneja Ya",
   "license": "MIT",
   "dependencies": {
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "mongodb": "^6.3.0"
   }
 }

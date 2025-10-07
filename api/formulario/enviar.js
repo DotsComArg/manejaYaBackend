@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { MongoClient } = require('mongodb');
 
 module.exports = async (req, res) => {
   console.log('=== FORMULARIO ENVIAR ENDPOINT ===');
@@ -47,8 +48,12 @@ module.exports = async (req, res) => {
       mensaje
     } = req.body;
 
+    console.log(`📝 Nuevo formulario recibido desde: ${origen}`);
+    console.log(`👤 Contacto: ${nombre} ${apellidos} (${email})`);
+
     // Validar campos requeridos
     if (!nombre || !apellidos || !email || !telefono || !ciudad || !codigo_postal || !colonia || !asunto || !mensaje || !origen) {
+      console.log('❌ Error: Faltan campos requeridos');
       return res.status(400).json({ 
         message: 'Faltan campos requeridos' 
       });
@@ -57,12 +62,43 @@ module.exports = async (req, res) => {
     // Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      console.log('❌ Error: Formato de email inválido');
       return res.status(400).json({ 
         message: 'Formato de email inválido' 
       });
     }
 
+    // Conectar a MongoDB
+    console.log('🔌 Conectando a MongoDB...');
+    const client = new MongoClient(process.env.MONGODB_URI || 'mongodb+srv://admin:admin@cluster01.pxbkzd4.mongodb.net/');
+    
+    await client.connect();
+    const db = client.db('manejaya');
+    const collection = db.collection('entries');
+
+    // Crear documento para MongoDB
+    const entry = {
+      origen,
+      nombre,
+      apellidos,
+      email,
+      telefono,
+      ciudad,
+      codigo_postal,
+      colonia,
+      asunto,
+      mensaje,
+      fecha: new Date(),
+      procesado: false
+    };
+
+    // Guardar en MongoDB
+    console.log('💾 Guardando entry en MongoDB...');
+    const result = await collection.insertOne(entry);
+    console.log(`✅ Entry guardado con ID: ${result.insertedId}`);
+
     // Configurar transporter de Nodemailer
+    console.log('📧 Configurando envío de email...');
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
@@ -143,7 +179,20 @@ module.exports = async (req, res) => {
     };
 
     // Enviar email
+    console.log('📤 Enviando email...');
     await transporter.sendMail(mailOptions);
+    console.log('✅ Email enviado correctamente');
+
+    // Marcar entry como procesado en MongoDB
+    await collection.updateOne(
+      { _id: result.insertedId },
+      { $set: { procesado: true, email_enviado: new Date() } }
+    );
+    console.log(`✅ Entry ${result.insertedId} marcado como procesado`);
+
+    // Cerrar conexión MongoDB
+    await client.close();
+    console.log('🔌 Conexión MongoDB cerrada');
 
     // Respuesta exitosa
     res.status(200).json({ 
@@ -152,7 +201,17 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error al enviar email:', error);
+    console.error('❌ Error en formulario:', error);
+    
+    // Intentar cerrar conexión MongoDB si está abierta
+    try {
+      if (client) {
+        await client.close();
+        console.log('🔌 Conexión MongoDB cerrada en catch');
+      }
+    } catch (closeError) {
+      console.error('Error cerrando MongoDB:', closeError);
+    }
     
     // Respuesta de error
     res.status(500).json({ 
