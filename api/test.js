@@ -1,8 +1,11 @@
+console.log('=== TEST ENDPOINT LOADED ===');
+
 module.exports = (req, res) => {
-  console.log('=== API INDEX ENDPOINT ===');
+  console.log('=== TEST ENDPOINT CALLED ===');
   console.log('Method:', req.method);
   console.log('URL:', req.url);
   console.log('Headers:', req.headers);
+  console.log('Query:', req.query);
   console.log('Body:', req.body);
   
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,17 +13,23 @@ module.exports = (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    console.log('Handling OPTIONS request');
+    console.log('Handling OPTIONS request in test');
     res.status(200).end();
     return;
   }
 
-  console.log('Sending success response');
+  console.log('Sending test response');
   res.status(200).json({
-    message: 'Backend maneja ya funcionando',
+    message: 'TEST ENDPOINT FUNCIONANDO',
     status: 'OK',
     timestamp: new Date().toISOString(),
-    endpoint: '/api/',
-    method: req.method
+    endpoint: '/api/test',
+    method: req.method,
+    debug: {
+      url: req.url,
+      headers: req.headers,
+      query: req.query,
+      body: req.body
+    }
   });
 };

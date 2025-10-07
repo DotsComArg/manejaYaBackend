@@ -1,6 +1,12 @@
 const nodemailer = require('nodemailer');
 
 module.exports = async (req, res) => {
+  console.log('=== FORMULARIO ENVIAR ENDPOINT ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.url);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  
   // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -8,6 +14,7 @@ module.exports = async (req, res) => {
 
   // Manejar preflight request
   if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS request in formulario');
     res.status(200).end();
     return;
   }
