@@ -13,6 +13,15 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Endpoint de prueba para verificar que el backend funciona
+  if (req.method === 'GET') {
+    return res.status(200).json({ 
+      message: 'Backend maneja ya funcionando',
+      status: 'OK',
+      timestamp: new Date().toISOString()
+    });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Método no permitido' });
   }
