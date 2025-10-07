@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     }
 
     // Configurar transporter de Nodemailer
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: process.env.SMTP_PORT,
       secure: false, // true para puerto 465, false para otros puertos
