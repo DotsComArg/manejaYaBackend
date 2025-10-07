@@ -1,0 +1,25 @@
+{
+  "name": "maneja-ya-backend",
+  "version": "1.0.0",
+  "description": "Backend para Maneja Ya - Envío de formularios por email",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "start": "echo 'Serverless functions'"
+  },
+  "keywords": [
+    "vercel",
+    "nodemailer",
+    "formularios",
+    "email"
+  ],
+  "author": "Maneja Ya",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
